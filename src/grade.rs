@@ -113,6 +113,12 @@ async fn grade_with_ai(
     for entry in fs::read_dir(project_dir)? {
         let entry = entry?;
         let path = entry.path();
+
+        // Skip the "deliverables" directory itself
+        if path.file_name().unwrap_or_default() == "deliverables" {
+            continue;
+        }
+
         if path.extension().and_then(|s| s.to_str()) == Some("json") {
             let file_content = fs::read_to_string(&path)?;
             let validation_result: ValidationResult = from_str(&file_content)?;
