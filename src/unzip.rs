@@ -43,7 +43,6 @@ pub fn unzip_files(
     std::env::set_current_dir(destination_dir)?;
 
     // Create necessary directories
-    fs::create_dir_all("feedback")?;
     fs::create_dir_all("deliverables")?;
 
     // Remove redundant .txt files
