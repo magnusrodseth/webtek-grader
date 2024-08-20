@@ -4,3 +4,4 @@ assignment*
 *.zip
 *.json
 project*
+.env

@@ -1,14 +1,25 @@
+use crate::schemas::ValidationResult;
 use async_recursion::async_recursion;
+use openai_api_rs::v1::api::OpenAIClient;
+use openai_api_rs::v1::chat_completion::{
+    self, ChatCompletionMessage, ChatCompletionRequest, MessageRole,
+};
+use openai_api_rs::v1::common::GPT4_O_MINI;
 use reqwest::Client;
+use serde_json::from_str;
+use std::env;
 use std::fs;
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;
 
 /// Function to traverse a directory and validate HTML, CSS, and JS files.
-pub async fn validate_directory(directory: &Path) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn validate_directory(
+    directory: &Path,
+    with_ai: bool,
+) -> Result<(), Box<dyn std::error::Error>> {
     let client = Client::new();
-    traverse_and_validate(directory, &client).await?;
+    traverse_and_validate(directory, &client, with_ai).await?;
     Ok(())
 }
 
@@ -17,32 +28,39 @@ pub async fn validate_directory(directory: &Path) -> Result<(), Box<dyn std::err
 async fn traverse_and_validate(
     directory: &Path,
     client: &Client,
+    with_ai: bool,
 ) -> Result<(), Box<dyn std::error::Error>> {
     for entry in fs::read_dir(directory)? {
         let entry = entry?;
         let path = entry.path();
 
         if path.is_dir() {
-            traverse_and_validate(&path, client).await?;
+            traverse_and_validate(&path, client, with_ai).await?;
         } else if path.is_file() {
             let filename = path.file_name().unwrap().to_str().unwrap();
             if filename.ends_with(".html")
                 || filename.ends_with(".css")
                 || filename.ends_with(".js")
             {
-                validate_file(&path, client).await?;
+                validate_file(&path, client, with_ai).await?;
             }
         }
     }
     Ok(())
 }
 
-/// Function to validate a file using the W3C Validator.
 async fn validate_file(
     file_path: &Path,
     client: &Client,
+    with_ai: bool,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let filename = file_path.to_str().unwrap();
+    let student_dir = file_path.ancestors().nth(2).unwrap(); // Extracting student's root directory
+    let project_dir = file_path.ancestors().nth(1).unwrap(); // Extracting project directory
+    let student_username = student_dir.file_name().unwrap().to_str().unwrap(); // Extracting student username from directory name
+
+    // Ensure the feedback file path is correct
+    let feedback_file_path = student_dir.join("feedback.txt");
 
     // Determine content type based on file extension
     let content_type = if filename.ends_with(".html") {
@@ -62,7 +80,7 @@ async fn validate_file(
         .post("https://validator.w3.org/nu/?out=json")
         .header("Content-Type", format!("{}; charset=utf-8", content_type))
         .header("User-Agent", "Mozilla/5.0 (compatible; Validator/1.0)")
-        .body(content)
+        .body(content.clone())
         .send()
         .await?
         .text()
@@ -73,6 +91,86 @@ async fn validate_file(
     file.write_all(response.as_bytes())?;
 
     println!("> Wrote response to {:?}", validate_file_path);
+
+    // If the --with-ai flag is set, grade the deliverable using AI
+    if with_ai {
+        grade_with_ai(project_dir, student_username, &feedback_file_path).await?;
+    }
+
+    Ok(())
+}
+
+async fn grade_with_ai(
+    project_dir: &Path,
+    student_username: &str,
+    feedback_file_path: &Path,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let client = OpenAIClient::new(env::var("OPENAI_API_KEY")?.to_string());
+
+    let mut validation_issues = vec![];
+
+    // Traverse the project directory for .json files
+    for entry in fs::read_dir(project_dir)? {
+        let entry = entry?;
+        let path = entry.path();
+        if path.extension().and_then(|s| s.to_str()) == Some("json") {
+            let file_content = fs::read_to_string(&path)?;
+            let validation_result: ValidationResult = from_str(&file_content)?;
+
+            for message in validation_result.messages {
+                if message.message_type == "error" || message.subtype.as_deref() == Some("warning")
+                {
+                    validation_issues.push(format!("{}", message.message));
+                }
+            }
+        }
+    }
+
+    let feedback = if validation_issues.is_empty() {
+        "Ingen formelle feil funnet.".to_string()
+    } else {
+        // Construct the AI prompt
+        let prompt = format!(
+            "Du har mottatt en liste med HTML/CSS/JS-valideringsfeil og advarsler fra en W3C Validator. \
+            For hver feilmelding, vennligst gi en kort forklaring på hva feilen betyr og et eksempel på hvordan man kan fikse det. \
+            Forklaringen skal IKKE formuleres som 'Feilmeldingen indikerer at ...', men heller en direkte, kort og konsis forklaring. \
+            IKKE gjenfortell feilmeldingen. Forklar kun hva feilen betyr. \
+            IKKE list opp feilene som en punktliste, men skriv en sammenhengende tekst med nye linjer mellom feil. \
+            DERSOM det ikke en noen feilmeldinger, skriv 'Ingen formelle feil funnet'. \
+            Hold eksempelet så kort som mulig (maks 1-5 linjer). \
+            Svarene skal være på norsk.\n\nFeilmeldinger:\n\n{}", 
+            validation_issues.join("\n\n") 
+        );
+
+        let req = ChatCompletionRequest::new(
+            GPT4_O_MINI.to_string(),
+            vec![ChatCompletionMessage {
+                role: MessageRole::user,
+                content: chat_completion::Content::Text(prompt),
+                name: None,
+                tool_calls: None,
+                tool_call_id: None,
+            }],
+        );
+
+        let result = client.chat_completion(req).await?;
+        result
+            .choices
+            .get(0)
+            .and_then(|choice| choice.message.content.as_deref())
+            .unwrap_or("Ingen formelle feil funnet.")
+            .to_string()
+    };
+
+    // Write the feedback to the student's feedback file
+    let mut feedback_file = File::create(feedback_file_path)?;
+    writeln!(
+        feedback_file,
+        "Feedback til {} (__%):\n\n{}",
+        student_username, feedback
+    )?;
+
+    println!("Feedback written to {:?}", feedback_file_path);
 
     Ok(())
 }
