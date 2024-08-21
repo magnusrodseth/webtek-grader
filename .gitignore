@@ -5,3 +5,5 @@ assignment*
 *.json
 project*
 .env
+README.pdf
+*.pdf
