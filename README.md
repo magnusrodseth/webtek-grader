@@ -32,7 +32,7 @@ cd webtek-grader
 cargo run -- --help
 
 # Unzip a deliverable
-cargo run -- unzip <path-to-zip-file> <output-directory>
+cargo run -- extract <path-to-zip-file> <output-directory>
 
 # Grade a deliverable (with AI)
 cargo run -- grade --with-ai <path-to-unzipped-directory>

@@ -3,9 +3,9 @@ use dotenv::dotenv;
 use std::env;
 use std::path::PathBuf;
 
+mod extract;
 mod grade;
 mod schemas;
-mod unzip;
 
 /// CLI structure using `clap`
 #[derive(Parser, Debug)]
@@ -17,10 +17,10 @@ struct Cli {
 
 #[derive(Subcommand, Debug)]
 enum Commands {
-    /// Unzip a file to a destination directory
-    Unzip {
-        /// The zip file to unzip
-        zip_file: PathBuf,
+    /// Extract a file to a destination directory
+    Extract {
+        /// The archive file to extract (supports ZIP, TAR, RAR)
+        archive_file: PathBuf,
         /// The destination directory
         destination_dir: PathBuf,
     },
@@ -39,12 +39,14 @@ async fn main() {
     let cli = Cli::parse();
 
     match &cli.command {
-        Commands::Unzip {
-            zip_file,
+        Commands::Extract {
+            archive_file,
             destination_dir,
         } => {
-            if let Err(e) = unzip::unzip_files(zip_file, destination_dir) {
-                eprintln!("Error unzipping file: {:?}", e);
+            dbg!(archive_file);
+            dbg!(destination_dir);
+            if let Err(e) = extract::extract_files(archive_file, destination_dir) {
+                eprintln!("Error extracting file: {:?}", e);
             }
         }
         Commands::Grade { directory, with_ai } => {
