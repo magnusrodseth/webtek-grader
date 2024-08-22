@@ -43,8 +43,6 @@ async fn main() {
             archive_file,
             destination_dir,
         } => {
-            dbg!(archive_file);
-            dbg!(destination_dir);
             if let Err(e) = extract::extract_files(archive_file, destination_dir) {
                 eprintln!("Error extracting file: {:?}", e);
             }
