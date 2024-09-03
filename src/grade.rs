@@ -142,7 +142,7 @@ async fn grade_with_ai(
             Forklaringen skal IKKE formuleres som 'Feilmeldingen indikerer at ...', men heller en direkte, kort og konsis forklaring. \
             IKKE gjenfortell feilmeldingen. Forklar kun hva feilen betyr. \
             IKKE list opp feilene som en punktliste, men skriv en sammenhengende tekst med nye linjer mellom feil. \
-            DERSOM det ikke en noen feilmeldinger, skriv 'Ingen formelle feil funnet'. \
+            DERSOM det ikke er noen feilmeldinger, skriv 'Ingen formelle feil funnet'. \
             Hold eksempelet så kort som mulig (maks 1-5 linjer). \
             Svarene skal være på norsk.\n\nFeilmeldinger:\n\n{}", 
             validation_issues.join("\n\n") 
