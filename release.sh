@@ -52,11 +52,12 @@ function bump_version() {
   rm Cargo.toml.bak
 }
 
-# Function to commit the change
+# Function to commit the change and push it to the remote repository
 function commit_version_change() {
   git add Cargo.toml
   git commit -m "Bump version to $new_version"
-  echo "Committed the new version."
+  git push origin HEAD
+  echo "Committed and pushed the new version."
 }
 
 # Function to publish the new version
