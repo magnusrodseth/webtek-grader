@@ -5,7 +5,9 @@ use std::path::PathBuf;
 
 mod extract;
 mod grade;
+mod pdf;
 mod schemas;
+mod validate;
 
 /// CLI structure using `clap`
 #[derive(Parser, Debug)]
@@ -17,20 +19,23 @@ struct Cli {
 
 #[derive(Subcommand, Debug)]
 enum Commands {
-    /// Extract a file to a destination directory
-    Extract {
+    /// Extract and validate without AI
+    WithoutAI {
         /// The archive file to extract (supports ZIP, TAR, RAR)
         archive_file: PathBuf,
         /// The destination directory
         destination_dir: PathBuf,
     },
-    /// Grade a directory
-    Grade {
-        /// The directory to grade
-        directory: PathBuf,
-        /// Optionally grade with AI
-        #[arg(long)]
-        with_ai: bool,
+    /// Extract, validate, and grade with AI
+    WithAI {
+        /// The archive file to extract (supports ZIP, TAR, RAR)
+        archive_file: PathBuf,
+        /// The destination directory
+        destination_dir: PathBuf,
+        /// Path to the assignment description PDF
+        description_file: PathBuf,
+        /// Path to the grading criteria PDF
+        criteria_file: PathBuf,
     },
 }
 
@@ -39,28 +44,44 @@ async fn main() {
     let cli = Cli::parse();
 
     match &cli.command {
-        Commands::Extract {
+        Commands::WithoutAI {
             archive_file,
             destination_dir,
         } => {
             if let Err(e) = extract::extract_files(archive_file, destination_dir) {
                 eprintln!("Error extracting file: {:?}", e);
             }
-        }
-        Commands::Grade { directory, with_ai } => {
-            // Load the .env file if the --with-ai flag is set
-            if *with_ai {
-                dotenv().ok();
-            }
 
-            // Check for the OPENAI_API_KEY environment variable
-            if *with_ai && env::var("OPENAI_API_KEY").is_err() {
-                eprintln!("Error: --with-ai flag is set, but OPENAI_API_KEY environment variable is not set.");
+            if let Err(e) = validate::validate_directory(destination_dir, false).await {
+                eprintln!("Error during validation: {:?}", e);
+            }
+        }
+        Commands::WithAI {
+            archive_file,
+            destination_dir,
+            description_file,
+            criteria_file,
+        } => {
+            dotenv().ok(); // Ensure .env is loaded
+            if env::var("OPENAI_API_KEY").is_err() {
+                eprintln!("Error: OPENAI_API_KEY environment variable is not set.");
                 std::process::exit(1);
             }
 
-            if let Err(e) = grade::validate_directory(directory, *with_ai).await {
-                eprintln!("Error grading directory: {:?}", e);
+            if let Err(e) = extract::extract_files(archive_file, destination_dir) {
+                eprintln!("Error extracting file: {:?}", e);
+            }
+
+            // Validate the extracted files
+            if let Err(e) = validate::validate_directory(destination_dir, true).await {
+                eprintln!("Error during validation: {:?}", e);
+            }
+
+            // Now call the grade function with the description, criteria, and deliverables
+            if let Err(e) =
+                grade::grade_directory(destination_dir, description_file, criteria_file).await
+            {
+                eprintln!("Error during grading: {:?}", e);
             }
         }
     }
