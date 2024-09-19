@@ -4,6 +4,12 @@
 
 This project is developed out of frustration related to the tedious process of downloading and grading student deliverables. It aids in the process of unzipping the student deliverables, and leverages GPT to generate a proposal for the student feedback.
 
+## Features
+
+- 📂 **Extract deliverables**: Extracts the student deliverables from a compressed file.
+- 🧪 **Validate deliverables**: Validates the HTML, CSS and JS using the W3C Validator API.
+- 🧠 **Grade deliverables with AI**: Grades the deliverables using the project description, all project files for the deliverable, and the grading criteria. This is optional, and can be run without AI.
+
 ## Getting started
 
 ### Prerequisites
@@ -42,17 +48,34 @@ cargo install webtek-grader
 # Display the help message
 webtek-grader --help
 
-# Unzip a deliverable
-webtek-grader extract <path-to-zip-file> <output-directory>
+# Extract and validate without AI
+webtek-grader without-ai <archive-file> <destination-directory>
 
-# Grade a deliverable (with AI)
-webtek-grader grade --with-ai <path-to-unzipped-directory>
-
-# Grade a deliverable (without AI)
-webtek-grader grade <path-to-unzipped-directory>
+# Extract, validate and grade with AI
+webtek-grader with-ai <archive-file> <destination-directory> <description-file> <criteria-file>
 ```
 
-## Example
+## How does grading with AI work?
+
+As described above, ensure you have an `OPENAI_API_KEY` environment variable set in your terminal or a `.env` file in the root of the project directory.
+
+The `archive-file` is the path to the compressed file containing the student deliverables.
+
+The `destination-directory` is the directory where the deliverables will be extracted, e.g. `assignment-1`.
+
+The `description-file` is the path to a PDF file for the assignment description. **Ensure this is a PDF file, and not any other file extension**.
+
+The `criteria-file` is the path to the grading criteria for the assignment. **Ensure this is a PDF file, and not any other file extension**.
+
+### The pipeline when grading with AI
+
+1. The script starts by **extracting the deliverables**.
+
+2. Next, it **validates** the HTML, CSS and JS using the W3C Validator API. When running this with AI, the errors and warning from W3C Validator are input to the GPT model, and a `validate.txt` file is generated with the validation feedback for that group.
+
+3. Next, the deliverable is **graded** using the project description, all project files for the deliverable, and the grading criteria. The GPT model outputs feedback and a suggested score for the deliverable in the `feedback.txt` file.
+
+## Example of validating with AI
 
 Here is an example of some errors and warnings from W3C Validator, and the respective generated feedback:
 
@@ -87,10 +110,10 @@ Here is an example of some errors and warnings from W3C Validator, and the respe
 }
 ```
 
-### Generated feedback
+### Generated feedback for validating
 
 ```txt
-Feedback til <student username> (__%):
+Tilbakemelding om validering:
 
 Verdien “300px” for attributten “width” på elementet “img” er ugyldig. Attributter for bredde og høyde skal kun spesifiseres med tall, så her skal “300” være brukt uten “px”. Eksempel: `<img src="bilde.jpg" width="300">`.
 
@@ -101,6 +124,43 @@ Det finnes ikke noe “p”-element i scope, men det er funnet en avsluttende �
 Det anbefales å bruke “h1”-elementet kun som et toppnivå overskrift, da skjermlesere og verktøy betrakter alle “h1”-elementer som toppnivå overskrifter. Bruk riktig hierarki, for eksempel: `<h1>Tittel</h1>` for hovedtittelen.
 
 Det kan være nyttig å legge til et “lang”-attributt i “html”-starttaggen for å deklarere språket i dokumentet. Dette forbedrer tilgjengeligheten for brukere som bruker skjermlesere. Eksempel: `<html lang="no">`.
+```
+
+## Example of grading with AI
+
+Here is an example of a project description and grading criteria, and the respective generated feedback:
+
+### Excerpt from project description and grading criteria
+
+```md
+# Project Description
+
+Create a new section element, below your previous, but above the footer.
+Add a header element to it, and fill it with an h2 tag containing the title "Questions".
+Then make a table with 2 columns and seven rows.
+The first row must be the table header with “Questions” and “Answers”.
+In each of the remaining six rows add one of the following questions and write their answers:
+
+...
+
+# Grading Criteria
+
+Is the placement of the section correct? 1.5 points
+Is the new header added properly? 1.5 points
+Are the questions answered correctly? 1 point for each correct answer
+Is the table created correctly? 6 points
+Is the table rendering properly? 6 points
+Does the columns have headings? 2 points for each heading
+```
+
+### Generated feedback for grading
+
+```txt
+Denne delen inkluderer en ny seksjon med overskriften (h2) "Questions".
+I denne seksjonen inkluderer studenten en tabell med syv rader og to kolonner.
+Kan følge lenken til denne seksjonen ved hjelp av ankeret "questions".
+Spørsmål og svar på spørsmålene oppgitt i oppgavebeskrivelsen er inkludert i tabellen.
+Dette oppfyller alle kravene i del 3.
 ```
 
 ## Developer Information

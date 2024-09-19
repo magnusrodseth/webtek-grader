@@ -78,6 +78,7 @@ pub async fn grade_directory(
                 Forklaringen skal IKKE formuleres som 'Feilmeldingen indikerer at ...', men heller direkte og kort. \
                 IKKE list opp feilene som en punktliste, men skriv en sammenhengende tekst med nye linjer mellom feil. \
                 Hold eksemplene korte (maks 1-5 linjer). Svarene skal være på norsk.\n\n \
+                DERSOM studentene skal besvare spesifikke spørsmål, ta et øyeblikk og tenk over om deres avgitte svar er korrekte. \
                 Avslutt med å gi et forslag til antall poeng, BASERT PÅ vurderingskriteriene og hver dels oppfyllelse av kravene. \
                 Formuler forslaget slik: 'Foreslått poengsum: X av Y'.\n\n \
                 Bruk 'studentene' i flertall for å referere til studentene. \
