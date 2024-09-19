@@ -82,6 +82,7 @@ pub async fn grade_directory(
                 Avslutt med å gi et forslag til antall poeng, BASERT PÅ vurderingskriteriene og hver dels oppfyllelse av kravene. \
                 Formuler forslaget slik: 'Foreslått poengsum: X av Y'.\n\n \
                 Bruk 'studentene' i flertall for å referere til studentene. \
+                Avslutt svaret ditt med følgende setning: '🚨 DETTE ER ET UTKAST TIL TILBAKEMELDING OG MÅ VERIFISERES FØR BRUK. 🚨'. \
                 Oppgavebeskrivelse:\n\n{}\n\n \
                 Vurderingskriterier:\n\n{}\n\n \
                 Studentens innlevering:\n\n{}",
