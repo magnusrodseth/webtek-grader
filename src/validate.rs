@@ -141,6 +141,7 @@ async fn validate_with_ai(
             IKKE list opp feilene som en punktliste, men skriv en sammenhengende tekst med nye linjer mellom feil. \
             DERSOM det ikke er noen feilmeldinger, skriv 'Ingen formelle feil funnet'. \
             Hold eksempelet så kort som mulig (maks 1-5 linjer). \
+            Bruk 'studentene' i flertall for å referere til studentene. \
             Svarene skal være på norsk.\n\nFeilmeldinger:\n\n{}", 
             validation_issues.join("\n\n") 
         );

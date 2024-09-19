@@ -80,6 +80,7 @@ pub async fn grade_directory(
                 Hold eksemplene korte (maks 1-5 linjer). Svarene skal være på norsk.\n\n \
                 Avslutt med å gi et forslag til antall poeng, BASERT PÅ vurderingskriteriene og hver dels oppfyllelse av kravene. \
                 Formuler forslaget slik: 'Foreslått poengsum: X av Y'.\n\n \
+                Bruk 'studentene' i flertall for å referere til studentene. \
                 Oppgavebeskrivelse:\n\n{}\n\n \
                 Vurderingskriterier:\n\n{}\n\n \
                 Studentens innlevering:\n\n{}",
