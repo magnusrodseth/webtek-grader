@@ -16,7 +16,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 If you're on Windows, you can download the installer from [here](https://forge.rust-lang.org/infra/other-installation-methods.html#other-ways-to-install-rustup).
 
-**If you want to use the `Grade with AI` feature**, ensure you have an OpenAI API key. If not, you can get one by following the instructions [here](https://beta.openai.com/signup/). Next, create a `.env` file in the root of the project directory and add the following:
+**If you want to use the `Grade with AI` feature**, ensure you have an OpenAI API key. If not, you can get one by following the instructions [here](https://platform.openai.com/docs/quickstart). Next, create a `.env` file in the root of the project directory and add the following:
 
 ```sh
 OPENAI_API_KEY=<your-openai-api-key>
