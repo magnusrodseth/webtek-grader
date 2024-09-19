@@ -10,6 +10,12 @@ This project is developed out of frustration related to the tedious process of d
 - 🧪 **Validate deliverables**: Validates the HTML, CSS and JS using the W3C Validator API.
 - 🧠 **Grade deliverables with AI**: Grades the deliverables using the project description, all project files for the deliverable, and the grading criteria. This is optional, and can be run without AI.
 
+## 🚨 Very important to note
+
+This project is only meant to be a guideline when grading assignments, **not a one-stop shop**. It is important to review the generated feedback and adjust it to fit the student's deliverable. Every single deliverable requires a human eye to evaluate the points given and the feedback provided.
+
+**Please do not use this blindly without reviewing the feedback generated. 🫶🏽**
+
 ## Getting started
 
 ### Prerequisites
