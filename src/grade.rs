@@ -3,18 +3,19 @@ use openai_api_rs::v1::api::OpenAIClient;
 use openai_api_rs::v1::chat_completion::{
     self, ChatCompletionMessage, ChatCompletionRequest, MessageRole,
 };
-use openai_api_rs::v1::common::GPT4_O_MINI;
+use openai_api_rs::v1::common::GPT4;
 use std::env;
 use std::error::Error;
 use std::fs;
 use std::path::Path;
+use walkdir::WalkDir;
 
 /// Function to read relevant project files (HTML, CSS, and JS) and format them with filename, extension, and content.
 async fn format_project_files(project_dir: &Path) -> Result<String, Box<dyn Error>> {
     let mut output = String::new();
 
-    // Walk through the directory and process only HTML, CSS, and JS files
-    for entry in fs::read_dir(project_dir)? {
+    // Walk through the directory and process only HTML, CSS, and JS files recursively
+    for entry in WalkDir::new(project_dir) {
         let entry = entry?;
         let path = entry.path();
 
@@ -76,7 +77,9 @@ pub async fn grade_directory(
                 Hvis en del mangler, forklar hva som mangler og hvordan det bør implementeres. \
                 Forklaringen skal IKKE formuleres som 'Feilmeldingen indikerer at ...', men heller direkte og kort. \
                 IKKE list opp feilene som en punktliste, men skriv en sammenhengende tekst med nye linjer mellom feil. \
-                Hold eksemplene korte (maks 1-5 linjer). Svarene skal være på norsk.\n\n\
+                Hold eksemplene korte (maks 1-5 linjer). Svarene skal være på norsk.\n\n \
+                Avslutt med å gi et forslag til antall poeng, BASERT PÅ vurderingskriteriene og hver dels oppfyllelse av kravene. \
+                Formuler forslaget slik: 'Foreslått poengsum: X av Y'.\n\n \
                 Oppgavebeskrivelse:\n\n{}\n\n \
                 Vurderingskriterier:\n\n{}\n\n \
                 Studentens innlevering:\n\n{}",
@@ -85,7 +88,7 @@ pub async fn grade_directory(
 
             // Create the chat completion request for GPT
             let request = ChatCompletionRequest::new(
-                GPT4_O_MINI.to_string(),
+                GPT4.to_string(),
                 vec![ChatCompletionMessage {
                     role: MessageRole::user,
                     content: chat_completion::Content::Text(prompt),
@@ -104,10 +107,7 @@ pub async fn grade_directory(
                 .unwrap_or("Ingen tilbakemelding generert.")
                 .to_string();
 
-            // Output or save the feedback for the student
-            println!("Feedback for {}:\n{}", student_dir.display(), feedback);
-
-            // Optionally save the feedback to a file
+            // Save the feedback to a file
             let feedback_file_path = student_dir.join("feedback.txt");
             fs::write(&feedback_file_path, feedback)?;
         }

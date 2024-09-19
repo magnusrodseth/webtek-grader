@@ -156,6 +156,11 @@ pub fn extract_files(
     archive_file_path: &Path,
     destination_dir: &Path,
 ) -> Result<(), Box<dyn std::error::Error>> {
+    // If destination dir already exists, remove it
+    if destination_dir.exists() {
+        fs::remove_dir_all(destination_dir)?;
+    }
+
     // Determine the archive type and get the corresponding extractor
     let extension = archive_file_path
         .extension()
@@ -180,12 +185,15 @@ pub fn extract_files(
     let entries: Vec<_> = fs::read_dir(destination_dir)?
         .filter_map(Result::ok)
         .filter(|entry| entry.path().is_file())
+        // ignore .txt files
+        .filter(|entry| entry.path().extension().and_then(|s| s.to_str()) != Some("txt"))
         .collect();
     let target = entries.len();
 
     for entry in entries {
         let path = entry.path();
         let filename = path.file_name().unwrap().to_str().unwrap();
+
         let mut username = get_username(filename);
 
         if username.is_empty() {

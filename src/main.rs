@@ -55,6 +55,8 @@ async fn main() {
             if let Err(e) = validate::validate_directory(destination_dir, false).await {
                 eprintln!("Error during validation: {:?}", e);
             }
+
+            println!("✅ Finished extracting and validating deliverables.");
         }
         Commands::WithAI {
             archive_file,
@@ -83,6 +85,8 @@ async fn main() {
             {
                 eprintln!("Error during grading: {:?}", e);
             }
+
+            println!("✅ Finished extracting, validating, and grading deliverables.");
         }
     }
 }

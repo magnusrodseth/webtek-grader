@@ -55,12 +55,10 @@ async fn validate_file(
     with_ai: bool,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let filename = file_path.to_str().unwrap();
-    let student_dir = file_path.ancestors().nth(2).unwrap(); // Extracting student's root directory
     let project_dir = file_path.ancestors().nth(1).unwrap(); // Extracting project directory
-    let student_username = student_dir.file_name().unwrap().to_str().unwrap(); // Extracting student username from directory name
 
-    // Ensure the feedback file path is correct
-    let feedback_file_path = student_dir.join("feedback.txt");
+    // Ensure the validation file is written to the student's directory
+    let feedback_file_path = project_dir.join("validate.txt");
 
     // Determine content type based on file extension
     let content_type = if filename.ends_with(".html") {
@@ -94,7 +92,7 @@ async fn validate_file(
 
     // If the --with-ai flag is set, grade the deliverable using AI
     if with_ai {
-        validate_with_ai(project_dir, student_username, &feedback_file_path).await?;
+        validate_with_ai(project_dir, &feedback_file_path).await?;
     }
 
     Ok(())
@@ -102,7 +100,6 @@ async fn validate_file(
 
 async fn validate_with_ai(
     project_dir: &Path,
-    student_username: &str,
     feedback_file_path: &Path,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let client = OpenAIClient::new(env::var("OPENAI_API_KEY")?.to_string());
@@ -172,8 +169,8 @@ async fn validate_with_ai(
     let mut feedback_file = File::create(feedback_file_path)?;
     writeln!(
         feedback_file,
-        "Feedback til {} (__%):\n\n{}",
-        student_username, feedback
+        "Tilbakemelding om validering: \n\n{}",
+        feedback
     )?;
 
     println!("Feedback written to {:?}", feedback_file_path);
