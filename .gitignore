@@ -7,3 +7,4 @@ project*
 .env
 README.pdf
 *.pdf
+.DS_Store
