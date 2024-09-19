@@ -1,6 +1,6 @@
 [package]
 name = "webtek-grader"
-version = "2.0.0"
+version = "2.0.1"
 edition = "2021"
 description = "Aids in the process of extracting student deliverables, and leverages GPT to generate a proposal for the student feedback."
 license = "MIT"
