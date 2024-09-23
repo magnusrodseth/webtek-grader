@@ -6,7 +6,8 @@ use openai_api_rs::v1::chat_completion::{
 use openai_api_rs::v1::common::GPT4;
 use std::env;
 use std::error::Error;
-use std::fs;
+use std::fs::{self, OpenOptions};
+use std::io::Write;
 use std::path::Path;
 use walkdir::WalkDir;
 
@@ -116,7 +117,13 @@ pub async fn grade_directory(
 
             // Save the feedback to a file
             let feedback_file_path = student_dir.join("feedback.txt");
-            fs::write(&feedback_file_path, formatted_feedback)?;
+            fs::write(&feedback_file_path, &formatted_feedback)?;
+
+            // Append the project feedback to final.txt
+            let final_file_path = student_dir.join("final.txt");
+            let mut final_file = OpenOptions::new().append(true).open(&final_file_path)?;
+
+            writeln!(final_file, "\n\n{}", formatted_feedback)?;
         }
     }
 
