@@ -81,6 +81,8 @@ The `criteria-file` is the path to the grading criteria for the assignment. **En
 
 3. Next, the deliverable is **graded** using the project description, all project files for the deliverable, and the grading criteria. The GPT model outputs feedback and a suggested score for the deliverable in the `feedback.txt` file.
 
+4. **For your convenience, the script creates a `final.txt` which contains the validation feedback and grading feedback for the deliverable in one file.**
+
 ## Example of validating with AI
 
 Here is an example of some errors and warnings from W3C Validator, and the respective generated feedback:
