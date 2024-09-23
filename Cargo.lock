@@ -1959,7 +1959,7 @@ dependencies = [
 
 [[package]]
 name = "webtek-grader"
-version = "2.2.0"
+version = "2.2.1"
 dependencies = [
  "async-recursion",
  "clap",
