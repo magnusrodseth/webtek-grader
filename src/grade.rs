@@ -81,7 +81,7 @@ pub async fn grade_directory(
                 DERSOM studentene skal besvare spesifikke spørsmål, ta et øyeblikk og tenk over om deres avgitte svar er korrekte. \
                 Avslutt med å gi et forslag til antall poeng, BASERT PÅ vurderingskriteriene og hver dels oppfyllelse av kravene. \
                 Formuler forslaget slik: 'Foreslått poengsum: X av Y'.\n\n \
-                Bruk 'studentene' i flertall for å referere til studentene. \
+                Bruk 'de' og 'dere' i flertall for å referere til studentene, ikke 'studentene'. \
                 Avslutt svaret ditt med følgende setning: '🚨 DETTE ER ET UTKAST TIL TILBAKEMELDING OG MÅ VERIFISERES FØR BRUK. 🚨'. \
                 Oppgavebeskrivelse:\n\n{}\n\n \
                 Vurderingskriterier:\n\n{}\n\n \
@@ -110,9 +110,12 @@ pub async fn grade_directory(
                 .unwrap_or("Ingen tilbakemelding generert.")
                 .to_string();
 
+            // Prepend the required string to the feedback
+            let formatted_feedback = format!("Tilbakemelding om prosjektet:\n\n{}", feedback);
+
             // Save the feedback to a file
             let feedback_file_path = student_dir.join("feedback.txt");
-            fs::write(&feedback_file_path, feedback)?;
+            fs::write(&feedback_file_path, formatted_feedback)?;
         }
     }
 

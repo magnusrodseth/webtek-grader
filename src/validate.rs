@@ -141,7 +141,8 @@ async fn validate_with_ai(
             IKKE list opp feilene som en punktliste, men skriv en sammenhengende tekst med nye linjer mellom feil. \
             DERSOM det ikke er noen feilmeldinger, skriv 'Ingen formelle feil funnet'. \
             Hold eksempelet så kort som mulig (maks 1-5 linjer). \
-            Bruk 'studentene' i flertall for å referere til studentene. \
+            Bruk 'de' og 'dere' i flertall for å referere til studentene, ikke 'studentene'. \
+            Avslutt svaret ditt med følgende setning: 'Det anbefales å bruke W3 Validator for å sjekke at HTML, CSS og JS oppfyller beste praksis.'. \
             Svarene skal være på norsk.\n\nFeilmeldinger:\n\n{}", 
             validation_issues.join("\n\n") 
         );
