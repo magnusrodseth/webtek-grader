@@ -137,6 +137,7 @@ async fn validate_with_ai(
             "Du har mottatt en liste med HTML/CSS/JS-valideringsfeil og advarsler fra en W3C Validator. \
             For hver feilmelding, vennligst gi en kort forklaring på hva feilen betyr og et eksempel på hvordan man kan fikse det. \
             Forklaringen skal IKKE formuleres som 'Feilmeldingen indikerer at ...', men heller en direkte, kort og konsis forklaring. \
+            Når du omtaler begreper innen HTML, CSS, og JS, som for eksempel 'table' etc., sørg for å bruke de engelske begrepene. \
             IKKE gjenfortell feilmeldingen. Forklar kun hva feilen betyr. \
             IKKE list opp feilene som en punktliste, men skriv en sammenhengende tekst med nye linjer mellom feil. \
             DERSOM det ikke er noen feilmeldinger, skriv 'Ingen formelle feil funnet'. \

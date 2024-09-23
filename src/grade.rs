@@ -76,6 +76,7 @@ pub async fn grade_directory(
                 For hver del, gi en kort og konsis forklaring på hvordan oppgaven tilfredsstiller eller ikke tilfredsstiller kravene. \
                 Hvis en del mangler, forklar hva som mangler og hvordan det bør implementeres. \
                 Forklaringen skal IKKE formuleres som 'Feilmeldingen indikerer at ...', men heller direkte og kort. \
+                Når du omtaler begreper innen HTML, CSS, og JS, som for eksempel 'table' etc., sørg for å bruke de engelske begrepene. \
                 IKKE list opp feilene som en punktliste, men skriv en sammenhengende tekst med nye linjer mellom feil. \
                 Hold eksemplene korte (maks 1-5 linjer). Svarene skal være på norsk.\n\n \
                 DERSOM studentene skal besvare spesifikke spørsmål, ta et øyeblikk og tenk over om deres avgitte svar er korrekte. \
