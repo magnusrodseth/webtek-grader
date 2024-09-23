@@ -80,7 +80,7 @@ pub async fn grade_directory(
                 Hold eksemplene korte (maks 1-5 linjer). Svarene skal være på norsk.\n\n \
                 DERSOM studentene skal besvare spesifikke spørsmål, ta et øyeblikk og tenk over om deres avgitte svar er korrekte. \
                 Avslutt med å gi et forslag til antall poeng, BASERT PÅ vurderingskriteriene og hver dels oppfyllelse av kravene. \
-                Formuler forslaget slik: 'Foreslått poengsum: X av Y'.\n\n \
+                Formuler forslaget slik: 'Poengsum: X av 100'.\n\n \
                 Bruk 'de' og 'dere' i flertall for å referere til studentene, ikke 'studentene'. \
                 Avslutt svaret ditt med følgende setning: '🚨 DETTE ER ET UTKAST TIL TILBAKEMELDING OG MÅ VERIFISERES FØR BRUK. 🚨'. \
                 Oppgavebeskrivelse:\n\n{}\n\n \
